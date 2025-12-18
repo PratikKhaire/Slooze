@@ -12,6 +12,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Slooze - Commodities Management System",
   description: "Role-based Commodities Management System with enhanced UI features",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
