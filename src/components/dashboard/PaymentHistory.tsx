@@ -1,5 +1,7 @@
 "use client";
 
+import { useTheme } from "@/context/ThemeContext";
+
 const payments = [
   { status: "Success", email: "Youremail@email.com", amount: "$100" },
   { status: "Success", email: "Youremail@email.com", amount: "$100" },
@@ -12,6 +14,9 @@ const payments = [
 ];
 
 export function PaymentHistory() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   return (
     <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)] flex flex-col h-full">
       <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">
@@ -36,7 +41,7 @@ export function PaymentHistory() {
               <tr key={index} className="border-b border-[var(--border)] last:border-b-0">
                 <td className="py-2">
                   <div className="flex items-center gap-2">
-                    <input type="checkbox" checked readOnly className="w-3 h-3 accent-[#10B981]" />
+                    <div className="w-3 h-3 rounded-sm bg-[#10B981]"></div>
                     <span className="text-xs text-[var(--foreground)]">{payment.status}</span>
                   </div>
                 </td>
@@ -52,12 +57,24 @@ export function PaymentHistory() {
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination - Green in light mode, neutral in dark mode */}
       <div className="flex justify-end gap-2 mt-4">
-        <button className="px-4 py-1.5 text-xs font-medium bg-[#10B981] text-white rounded hover:bg-[#059669] transition-colors">
+        <button
+          className={`px-4 py-1.5 text-xs font-medium border rounded transition-colors ${
+            isDark
+              ? "border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--card-hover)]"
+              : "border-[#10B981] text-[#10B981] bg-white hover:bg-[#10B981] hover:text-white"
+          }`}
+        >
           Previous
         </button>
-        <button className="px-4 py-1.5 text-xs font-medium bg-[#10B981] text-white rounded hover:bg-[#059669] transition-colors">
+        <button
+          className={`px-4 py-1.5 text-xs font-medium rounded transition-colors ${
+            isDark
+              ? "bg-[var(--foreground)] text-[var(--background)] hover:opacity-90"
+              : "bg-[#10B981] text-white hover:bg-[#059669]"
+          }`}
+        >
           Next
         </button>
       </div>

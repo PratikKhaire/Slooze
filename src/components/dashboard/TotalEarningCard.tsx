@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { useTheme } from "@/context/ThemeContext";
 
 // Line chart data (monthly)
 const lineData = [
@@ -60,6 +61,15 @@ interface TotalEarningCardProps {
 }
 
 export function TotalEarningCard({ type }: TotalEarningCardProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  // Unique gradient IDs based on theme and type
+  const barGradientId = isDark ? "barGradientDarkTE" : "barGradientLightTE";
+  const fadeGradientId = isDark ? "fadeGradientDarkTE" : "fadeGradientLightTE";
+  const weeklyGradient1 = isDark ? "weeklyGradient1Dark" : "weeklyGradient1Light";
+  const weeklyGradient2 = isDark ? "weeklyGradient2Dark" : "weeklyGradient2Light";
+
   return (
     <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
       <div className="flex items-start justify-between mb-4">
@@ -87,54 +97,93 @@ export function TotalEarningCard({ type }: TotalEarningCardProps) {
         <ResponsiveContainer width="100%" height="100%">
           {type === "line" ? (
             <LineChart data={lineData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              {/* Subtle vertical stripes in background for dark mode */}
+              <CartesianGrid
+                strokeDasharray="0"
+                stroke={isDark ? "#1F1F1F" : "var(--border)"}
+                horizontal={false}
+                vertical={true}
+                strokeWidth={isDark ? 50 : 0}
+                strokeOpacity={isDark ? 0.5 : 0}
+              />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "var(--foreground-secondary)", fontSize: 11 }}
+                dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "var(--foreground-secondary)", fontSize: 11 }}
+                domain={[0, 'auto']}
+                ticks={[0]}
+                width={25}
               />
+              {/* Primary green line - brighter */}
               <Line
                 type="monotone"
                 dataKey="value"
                 stroke="#10B981"
                 strokeWidth={2}
-                dot={{ fill: "#10B981", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "#0D0D0D", stroke: "#10B981", strokeWidth: 2, r: 5 }}
+                activeDot={{ fill: "#10B981", stroke: "#fff", strokeWidth: 2, r: 6 }}
               />
+              {/* Secondary line - lighter green */}
               <Line
                 type="monotone"
                 dataKey="value2"
-                stroke="#86EFAC"
+                stroke="#34D399"
                 strokeWidth={2}
-                dot={{ fill: "#86EFAC", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "#0D0D0D", stroke: "#34D399", strokeWidth: 2, r: 5 }}
+                activeDot={{ fill: "#34D399", stroke: "#fff", strokeWidth: 2, r: 6 }}
               />
             </LineChart>
           ) : type === "bar" ? (
             <BarChart data={barData} barGap={2}>
               <defs>
-                <linearGradient id="barFadeGradient" x1="0" y1="1" x2="0" y2="0">
-                  <stop offset="0%" stopColor="#D1D5DB" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#D1D5DB" stopOpacity={0} />
-                </linearGradient>
+                {/* Teal/Cyan gradient for dark mode - same as SubscriptionsPerformers */}
+                {isDark ? (
+                  <>
+                    <linearGradient id={barGradientId} x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#009FB5" stopOpacity={1} />
+                      <stop offset="50%" stopColor="#14B8A6" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#00F3BF" stopOpacity={1} />
+                    </linearGradient>
+                    <linearGradient id={fadeGradientId} x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#1A1A1A" stopOpacity={0.9} />
+                      <stop offset="50%" stopColor="#252525" stopOpacity={0.7} />
+                      <stop offset="100%" stopColor="#1A1A1A" stopOpacity={0.3} />
+                    </linearGradient>
+                  </>
+                ) : (
+                  <>
+                    <linearGradient id={barGradientId} x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#059669" stopOpacity={1} />
+                      <stop offset="50%" stopColor="#10B981" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#34D399" stopOpacity={1} />
+                    </linearGradient>
+                    <linearGradient id={fadeGradientId} x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#D1D5DB" stopOpacity={0.5} />
+                      <stop offset="100%" stopColor="#D1D5DB" stopOpacity={0} />
+                    </linearGradient>
+                  </>
+                )}
               </defs>
               <XAxis dataKey="name" hide />
               <YAxis hide domain={[0, MAX_BAR]} />
               <Bar
                 dataKey="value"
                 stackId="stack"
-                fill="#10B981"
+                fill={`url(#${barGradientId})`}
                 radius={[4, 4, 4, 4]}
                 barSize={30}
               />
               <Bar
                 dataKey="remaining"
                 stackId="stack"
-                fill="url(#barFadeGradient)"
+                fill={`url(#${fadeGradientId})`}
                 radius={[4, 4, 0, 0]}
                 barSize={30}
               />
@@ -142,11 +191,31 @@ export function TotalEarningCard({ type }: TotalEarningCardProps) {
           ) : (
             <BarChart data={weeklyData} barGap={4}>
               <defs>
-                <linearGradient id="weeklyFadeGradient" x1="0" y1="1" x2="0" y2="0">
-                  <stop offset="0%" stopColor="#86EFAC" stopOpacity={1} />
-                  <stop offset="70%" stopColor="#86EFAC" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="#86EFAC" stopOpacity={0.2} />
-                </linearGradient>
+                {/* Orange/Yellow gradient for dark mode weekly chart */}
+                {isDark ? (
+                  <>
+                    <linearGradient id={weeklyGradient1} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F59E0B" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#D97706" stopOpacity={1} />
+                    </linearGradient>
+                    <linearGradient id={weeklyGradient2} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#FBBF24" stopOpacity={0.8} />
+                      <stop offset="100%" stopColor="#F59E0B" stopOpacity={0.5} />
+                    </linearGradient>
+                  </>
+                ) : (
+                  <>
+                    <linearGradient id={weeklyGradient1} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#059669" stopOpacity={1} />
+                    </linearGradient>
+                    <linearGradient id={weeklyGradient2} x1="0" y1="1" x2="0" y2="0">
+                      <stop offset="0%" stopColor="#86EFAC" stopOpacity={1} />
+                      <stop offset="70%" stopColor="#86EFAC" stopOpacity={0.6} />
+                      <stop offset="100%" stopColor="#86EFAC" stopOpacity={0.2} />
+                    </linearGradient>
+                  </>
+                )}
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis
@@ -162,8 +231,8 @@ export function TotalEarningCard({ type }: TotalEarningCardProps) {
                 domain={[0, 500]}
                 ticks={[100, 200, 300, 400, 500]}
               />
-              <Bar dataKey="thisWeek" fill="#10B981" radius={[6, 6, 0, 0]} barSize={24} />
-              <Bar dataKey="lastWeek" fill="url(#weeklyFadeGradient)" radius={[6, 6, 0, 0]} barSize={24} />
+              <Bar dataKey="thisWeek" fill={`url(#${weeklyGradient1})`} radius={[6, 6, 0, 0]} barSize={24} />
+              <Bar dataKey="lastWeek" fill={`url(#${weeklyGradient2})`} radius={[6, 6, 0, 0]} barSize={24} />
             </BarChart>
           )}
         </ResponsiveContainer>

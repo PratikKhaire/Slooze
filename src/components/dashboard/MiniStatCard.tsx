@@ -1,19 +1,28 @@
 "use client";
 
+import { useTheme } from "@/context/ThemeContext";
+
 interface MiniStatCardProps {
   title: string;
   value: string;
-  color: "green" | "cyan" | "purple";
+  color: "green" | "cyan" | "purple" | "orange";
 }
 
 export function MiniStatCard({ title, value, color }: MiniStatCardProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const colorMap = {
     green: "#10B981",
     cyan: "#06B6D4",
     purple: "#8B5CF6",
+    orange: "#F59E0B",
   };
 
   const lineColor = colorMap[color];
+
+  // Secondary line color - more visible in dark mode
+  const secondaryColor = isDark ? "#4B5563" : "#9CA3AF";
 
   // Primary line points (colored)
   const primaryPoints = "0,40 30,35 60,30 90,25 120,30 150,22 180,28 210,18 240,25 270,15";
@@ -41,7 +50,7 @@ export function MiniStatCard({ title, value, color }: MiniStatCardProps) {
           {/* Secondary gray line (behind) */}
           <polyline
             fill="none"
-            stroke="#9CA3AF"
+            stroke={secondaryColor}
             strokeWidth="2"
             points={secondaryPoints}
           />

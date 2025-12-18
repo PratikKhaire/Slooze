@@ -197,7 +197,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <MiniStatCard title="Total Earning" value="+112,893" color="green" />
             <MiniStatCard title="Total Sales" value="+112,893" color="cyan" />
-            <MiniStatCard title="Total Views" value="+112,893" color="purple" />
+            <MiniStatCard title="Total Views" value="+112,893" color="orange" />
           </div>
 
           {/* Bottom Row - Subscriptions, Top Sales, Payment History */}
