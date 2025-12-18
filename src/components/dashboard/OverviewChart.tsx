@@ -6,23 +6,31 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-  Tooltip,
+  CartesianGrid,
 } from "recharts";
 
-const data = [
-  { month: "Jan", thisYear: 1500, lastYear: 800 },
-  { month: "Feb", thisYear: 4800, lastYear: 1200 },
-  { month: "Mar", thisYear: 900, lastYear: 600 },
-  { month: "Apr", thisYear: 5000, lastYear: 1800 },
-  { month: "May", thisYear: 3000, lastYear: 1200 },
-  { month: "Jun", thisYear: 3500, lastYear: 1000 },
-  { month: "Jul", thisYear: 4500, lastYear: 1500 },
-  { month: "Aug", thisYear: 3000, lastYear: 1800 },
-  { month: "Sep", thisYear: 600, lastYear: 400 },
-  { month: "Oct", thisYear: 3200, lastYear: 1200 },
-  { month: "Nov", thisYear: 2000, lastYear: 1500 },
-  { month: "Dec", thisYear: 3200, lastYear: 1000 },
+const MAX_VALUE = 6000;
+
+const rawData = [
+  { month: "Jan", value: 1500 },
+  { month: "Feb", value: 4800 },
+  { month: "Mar", value: 1000 },
+  { month: "Apr", value: 5200 },
+  { month: "May", value: 3000 },
+  { month: "Jun", value: 3500 },
+  { month: "Jul", value: 4800 },
+  { month: "Aug", value: 2800 },
+  { month: "Sep", value: 700 },
+  { month: "Oct", value: 3200 },
+  { month: "Nov", value: 1800 },
+  { month: "Dec", value: 3200 },
 ];
+
+// Calculate remaining value for stacked effect
+const data = rawData.map((item) => ({
+  ...item,
+  remaining: MAX_VALUE - item.value,
+}));
 
 export function OverviewChart() {
   return (
@@ -31,40 +39,53 @@ export function OverviewChart() {
         Overview
       </h3>
 
-      <div style={{ width: '100%', height: 300 }}>
+      <div style={{ width: '100%', height: 320 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} barGap={2}>
+          <BarChart data={data} barGap={4} barCategoryGap="20%">
+            {/* Define gradient for fade effect */}
+            <defs>
+              <linearGradient id="fadeGradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#D1D5DB" stopOpacity={0.7} />
+                <stop offset="100%" stopColor="#D1D5DB" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="0"
+              stroke="var(--border)"
+              horizontal={false}
+              vertical={false}
+            />
             <XAxis
               dataKey="month"
               axisLine={false}
               tickLine={false}
               tick={{ fill: "var(--foreground-secondary)", fontSize: 12 }}
+              dy={10}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
               tick={{ fill: "var(--foreground-secondary)", fontSize: 12 }}
               tickFormatter={(value) => `$${value}`}
+              domain={[0, MAX_VALUE]}
+              ticks={[0, 1500, 3000, 4500, 6000]}
+              hide
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-              }}
-              formatter={(value) => [`$${value ?? 0}`, ""]}
-            />
+            {/* Blue bar for actual value */}
             <Bar
-              dataKey="thisYear"
-              fill="#3B82F6"
-              radius={[4, 4, 0, 0]}
-              barSize={16}
+              dataKey="value"
+              stackId="stack"
+              fill="#5B8DEF"
+              radius={[0, 0, 0, 0]}
+              barSize={45}
             />
+            {/* Gray faded bar for remaining (above blue) */}
             <Bar
-              dataKey="lastYear"
-              fill="#E5E7EB"
+              dataKey="remaining"
+              stackId="stack"
+              fill="url(#fadeGradient)"
               radius={[4, 4, 0, 0]}
-              barSize={16}
+              barSize={45}
             />
           </BarChart>
         </ResponsiveContainer>

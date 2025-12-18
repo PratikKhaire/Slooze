@@ -28,7 +28,7 @@ export default function HomePage() {
     <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full spinner mx-auto mb-4" />
-        <p className="text-[var(--foreground-secondary)]">Loading...</p>
+        <p className="text-foreground-secondary">Loading...</p>
       </div>
     </div>
   );

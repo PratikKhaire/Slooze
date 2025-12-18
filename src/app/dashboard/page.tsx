@@ -48,27 +48,70 @@ export default function DashboardPage() {
       <main className="ml-64 pt-16 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">
+          <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6 mt-6">
             Dashboard
           </h1>
 
           {/* Top Stat Cards Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
-              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Total Earning</p>
-              <p className="text-xl font-bold text-[var(--foreground)]">$ 112,893.00</p>
+            {/* Total Earning */}
+            <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)] relative">
+              <div className="absolute top-4 right-4">
+                <svg className="w-5 h-5 text-[var(--foreground-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <p className="text-sm text-[var(--foreground-secondary)] mb-1">Total Earning</p>
+              <p className="text-2xl font-bold text-[var(--foreground)] mb-2">$ 112,893.00</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+                <span className="text-xs text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded-full font-medium">▲ 70.5%</span>
+              </div>
             </div>
-            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
-              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Views</p>
-              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+
+            {/* Views */}
+            <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)] relative">
+              <div className="absolute top-4 right-4">
+                <svg className="w-5 h-5 text-[var(--foreground-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <p className="text-sm text-[var(--foreground-secondary)] mb-1">Views</p>
+              <p className="text-2xl font-bold text-[var(--foreground)] mb-2">+ 112,893</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+                <span className="text-xs text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded-full font-medium">▲ 70.5%</span>
+              </div>
             </div>
-            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
-              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Total Sales</p>
-              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+
+            {/* Total Sales */}
+            <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)] relative">
+              <div className="absolute top-4 right-4">
+                <svg className="w-5 h-5 text-[var(--foreground-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <p className="text-sm text-[var(--foreground-secondary)] mb-1">Total Sales</p>
+              <p className="text-2xl font-bold text-[var(--foreground)] mb-2">+ 112,893</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+                <span className="text-xs text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded-full font-medium">▲ 70.5%</span>
+              </div>
             </div>
-            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
-              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Subscriptions</p>
-              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+
+            {/* Subscriptions */}
+            <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)] relative">
+              <div className="absolute top-4 right-4">
+                <svg className="w-5 h-5 text-[var(--foreground-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <p className="text-sm text-[var(--foreground-secondary)] mb-1">Subscriptions</p>
+              <p className="text-2xl font-bold text-[var(--foreground)] mb-2">+ 112,893</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+                <span className="text-xs text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded-full font-medium">▲ 70.5%</span>
+              </div>
             </div>
           </div>
 
