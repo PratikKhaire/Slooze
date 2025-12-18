@@ -141,29 +141,35 @@ export default function DashboardPage() {
           {/* Total Earning Cards - Row 2 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <TotalEarningCard type="bar-weekly" />
+
+            {/* Subscriptions Card */}
             <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
-              <h3 className="text-sm font-medium text-[var(--foreground-secondary)] mb-1">Subscriptions</h3>
-              <p className="text-2xl font-bold text-[var(--foreground)]">+112,893</p>
-              <div className="flex items-center gap-2 mt-1">
+              <h3 className="text-base font-semibold text-[var(--foreground)] mb-1">Subscriptions</h3>
+              <p className="text-2xl font-bold text-[var(--foreground)] mb-2">+ 112,893</p>
+              <div className="flex items-center gap-2">
                 <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
-                <span className="text-xs text-[var(--success)] bg-green-100 dark:bg-green-900/20 px-1.5 py-0.5 rounded">70.5%</span>
+                <span className="w-2 h-2 rounded-sm bg-[#10B981]"></span>
+                <span className="text-xs text-[#10B981] font-medium">70.5%</span>
               </div>
-              {/* Yellow line chart */}
-              <div className="mt-4 h-16">
-                <svg viewBox="0 0 200 60" className="w-full h-full">
+
+              {/* Yellow line chart with dots */}
+              <div className="mt-6" style={{ height: 120 }}>
+                <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
+                  {/* Line path */}
                   <polyline
                     fill="none"
                     stroke="#F59E0B"
                     strokeWidth="2"
-                    points="10,50 30,45 50,40 70,30 90,35 110,25 130,30 150,20 170,25 190,15"
+                    points="15,80 45,75 75,70 105,60 135,65 165,50 195,55 225,40 255,45 285,25"
                   />
+                  {/* Dots */}
                   <g fill="#F59E0B">
-                    <circle cx="10" cy="50" r="3" />
-                    <circle cx="50" cy="40" r="3" />
-                    <circle cx="90" cy="35" r="3" />
-                    <circle cx="130" cy="30" r="3" />
-                    <circle cx="170" cy="25" r="3" />
-                    <circle cx="190" cy="15" r="3" />
+                    <circle cx="15" cy="80" r="4" />
+                    <circle cx="75" cy="70" r="4" />
+                    <circle cx="135" cy="65" r="4" />
+                    <circle cx="195" cy="55" r="4" />
+                    <circle cx="255" cy="45" r="4" />
+                    <circle cx="285" cy="25" r="4" />
                   </g>
                 </svg>
               </div>

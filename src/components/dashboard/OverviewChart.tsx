@@ -76,7 +76,7 @@ export function OverviewChart() {
               dataKey="value"
               stackId="stack"
               fill="#5B8DEF"
-              radius={[0, 0, 0, 0]}
+              radius={[4, 4, 0, 0]}
               barSize={45}
             />
             {/* Gray faded bar for remaining (above blue) */}
