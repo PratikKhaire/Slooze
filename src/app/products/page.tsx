@@ -48,25 +48,19 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
+      <Header />
 
-      <div className="ml-64">
-        <Header />
-
-        <main className="p-6">
+      <main className="ml-64 pt-16 p-6">
+        <div className="max-w-7xl mx-auto">
           {/* Page Header */}
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-[var(--foreground)]">
-                Product
-              </h1>
-              <p className="text-sm text-[var(--foreground-secondary)]">
-                Manage your product inventory
-              </p>
-            </div>
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">
+              Product
+            </h1>
             {isManager && (
               <Link
                 href="/products/add"
-                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--primary-hover)] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[#10B981] text-white rounded-lg text-sm font-medium hover:bg-[#059669] transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Product
@@ -90,10 +84,10 @@ export default function ProductsPage() {
               <SalesChart />
             </div>
           </div>
-        </main>
+        </div>
 
         <Footer />
-      </div>
+      </main>
     </div>
   );
 }

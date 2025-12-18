@@ -52,6 +52,26 @@ export default function DashboardPage() {
             Dashboard
           </h1>
 
+          {/* Top Stat Cards Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Total Earning</p>
+              <p className="text-xl font-bold text-[var(--foreground)]">$ 112,893.00</p>
+            </div>
+            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Views</p>
+              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+            </div>
+            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Total Sales</p>
+              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+            </div>
+            <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-secondary)] mb-1">Subscriptions</p>
+              <p className="text-xl font-bold text-[var(--foreground)]">+ 112,893</p>
+            </div>
+          </div>
+
           {/* Overview and Recent Sales Section */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2">
@@ -65,7 +85,7 @@ export default function DashboardPage() {
           {/* Stats Section Header */}
           <StatsSection />
 
-          {/* Total Earning Cards */}
+          {/* Total Earning Cards - Row 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="lg:col-span-2">
               <TotalEarningCard type="line" />
@@ -75,7 +95,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Second Row - Total Earning & Subscriptions */}
+          {/* Total Earning Cards - Row 2 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <TotalEarningCard type="bar-weekly" />
             <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
@@ -85,8 +105,8 @@ export default function DashboardPage() {
                 <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
                 <span className="text-xs text-[var(--success)] bg-green-100 dark:bg-green-900/20 px-1.5 py-0.5 rounded">70.5%</span>
               </div>
-              {/* Yellow line chart placeholder */}
-              <div className="mt-4 h-16 flex items-end gap-1">
+              {/* Yellow line chart */}
+              <div className="mt-4 h-16">
                 <svg viewBox="0 0 200 60" className="w-full h-full">
                   <polyline
                     fill="none"
@@ -107,6 +127,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Stats Section Header 2 */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Stats</h2>
+          </div>
+
           {/* Mini Stat Cards Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <MiniStatCard title="Total Earning" value="+112,893" color="green" />
@@ -114,7 +139,7 @@ export default function DashboardPage() {
             <MiniStatCard title="Total Views" value="+112,893" color="purple" />
           </div>
 
-          {/* Bottom Row */}
+          {/* Bottom Row - Subscriptions, Top Sales, Payment History */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <SubscriptionsPerformers />
             <TopSalesProduct />
