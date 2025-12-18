@@ -22,7 +22,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     >
       <Sun
         className={cn(
-          "w-5 h-5 text-[var(--accent-secondary)] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300",
+          "w-5 h-5 text-[#F59E0B] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300",
           theme === "light" ? "opacity-100 rotate-0" : "opacity-0 rotate-90"
         )}
       />

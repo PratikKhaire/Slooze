@@ -55,15 +55,13 @@ export default function ProductsPage() {
             <h1 className="text-2xl font-bold text-[var(--foreground)]">
               Product
             </h1>
-            {isManager && (
-              <Link
-                href="/products/add"
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg text-sm font-medium hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-                Add New Product
-              </Link>
-            )}
+            <Link
+              href="/products/add"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg text-sm font-medium hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Add New Product
+            </Link>
           </div>
 
           {/* Content Grid */}

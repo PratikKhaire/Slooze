@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, Search, Menu, Grid3X3, User } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Bell, Search, Menu, Grid3X3, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,20 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick, className }: HeaderProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header
@@ -67,22 +81,84 @@ export function Header({ onMenuClick, className }: HeaderProps) {
           <Bell className="w-5 h-5 text-[var(--foreground-secondary)]" />
         </button>
 
-        {/* User avatar */}
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-              alt="User avatar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
+        {/* User avatar with dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-[#8B5CF6] transition-colors">
+              <img
+                src={user?.role === "manager"
+                  ? "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                  : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                }
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </button>
 
-        {/* Add New Product button - Purple/Violet gradient matching Figma */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white text-sm font-medium rounded-lg hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all shadow-sm">
-          <span className="text-lg leading-none">+</span>
-          <span>Add New Product</span>
-        </button>
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
+              {/* User Info */}
+              <div className="p-4 border-b border-[var(--border)]">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: user?.role === "manager" ? "#8B5CF6" : "#10B981" }}
+                  >
+                    <span className="text-white font-semibold text-base">
+                      {user?.name?.charAt(0) || "U"}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[var(--foreground)]">
+                      {user?.name || "User"}
+                    </p>
+                    <p
+                      className="text-xs"
+                      style={{ color: user?.role === "manager" ? "#8B5CF6" : "#10B981" }}
+                    >
+                      {user?.role === "manager" ? "Manager" : "Store Keeper"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Menu Items */}
+              <div className="p-2">
+                <button
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)] hover:text-[var(--foreground)] transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  <span>My Profile</span>
+                </button>
+                <button
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)] hover:text-[var(--foreground)] transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Account Settings</span>
+                </button>
+              </div>
+
+              {/* Logout */}
+              <div className="p-2 border-t border-[var(--border)]">
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#EC4899] hover:bg-[#EC4899]/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Log out</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

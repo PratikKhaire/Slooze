@@ -62,7 +62,7 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
       icon: Store,
       children: [
         { label: "Product", href: "/products" },
-        ...(isManager ? [{ label: "Add Product", href: "/products/add" }] : []),
+        { label: "Add Product", href: "/products/add" },
       ],
     },
     {
@@ -128,8 +128,8 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
       )}
     >
       {/* User Profile Header */}
-      <div className="p-6 border-b border-[var(--border)]">
-        <div className="flex items-center gap-3">
+      <div className="p-3 border-b border-[var(--border)]">
+        <div className="flex items-center gap-3 ">
           <div className="w-10 h-10 rounded-full bg-[var(--background-secondary)] border border-[var(--border)] flex items-center justify-center">
             <User className="w-5 h-5 text-[var(--foreground-secondary)]" />
           </div>
@@ -221,37 +221,7 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
           })}
         </ul>
       </nav>
-
-      {/* User Footer */}
-      <div className="p-4 border-t border-[var(--border)]">
-        <div className="flex items-center gap-3 mb-4 px-4">
-          <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center">
-            <span className="text-white font-medium text-sm">
-              {user?.name?.charAt(0) || "U"}
-            </span>
-          </div>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                {user?.name}
-              </p>
-              <p className="text-xs text-[var(--foreground-secondary)] truncate">
-                {user?.role === "manager" ? "Manager" : "Store Keeper"}
-              </p>
-            </div>
-          )}
-        </div>
-        <button
-          onClick={logout}
-          className={cn(
-            "flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--error)] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors",
-            isCollapsed && "justify-center"
-          )}
-        >
-          <LogOut className="w-5 h-5" />
-          {!isCollapsed && <span>Log out</span>}
-        </button>
-      </div>
     </aside>
   );
 }
+

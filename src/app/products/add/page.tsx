@@ -75,24 +75,37 @@ export default function AddProductPage() {
 
       <main className="ml-64 pt-16 p-6">
         <div className="max-w-6xl mx-auto">
-          {/* Page Header */}
-          <div className="flex items-center justify-between mb-8 mt-6">
+          {/* Page Title Row */}
+          <div className="flex items-center justify-between mb-6 mt-6">
             <h1 className="text-2xl font-bold text-[var(--foreground)]">
-              Add New Product
+              Add Product
             </h1>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleDiscard}
-                className="px-4 py-2 border border-[#EC4899] text-[#EC4899] rounded-lg text-sm font-medium hover:bg-[#EC4899]/10 transition-colors"
-              >
-                Discard Change
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-6 py-2 bg-[#8B5CF6] text-white rounded-lg text-sm font-medium hover:bg-[#7C3AED] transition-colors"
-              >
-                Save
-              </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white text-sm font-medium rounded-lg hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all shadow-sm">
+              <span className="text-lg leading-none">+</span>
+              <span>Add New Product</span>
+            </button>
+          </div>
+
+          {/* Section Header Card */}
+          <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)] mb-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">
+                Add New Product
+              </h2>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleDiscard}
+                  className="px-4 py-2 border border-[#EC4899] text-[#EC4899] rounded-lg text-sm font-medium hover:bg-[#EC4899]/10 transition-colors"
+                >
+                  Discard Change
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2 bg-[#8B5CF6] text-white rounded-lg text-sm font-medium hover:bg-[#7C3AED] transition-colors"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
 
