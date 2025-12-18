@@ -3,115 +3,146 @@
 import {
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
+  Tooltip,
+  CartesianGrid,
 } from "recharts";
-import { TrendingUp } from "lucide-react";
 
-interface SalesChartProps {
-  data?: Array<{ day: string; value: number }>;
-}
-
-const defaultData = [
-  { day: "Mon", value: 4000 },
-  { day: "Tue", value: 3000 },
-  { day: "Wed", value: 5000 },
-  { day: "Thu", value: 4500 },
-  { day: "Fri", value: 6000 },
-  { day: "Sat", value: 5500 },
-  { day: "Sun", value: 7000 },
+const lineData = [
+  { month: "Jan", value: 50 },
+  { month: "Feb", value: 80 },
+  { month: "Mar", value: 45 },
+  { month: "Apr", value: 120 },
+  { month: "May", value: 90 },
+  { month: "Jun", value: 180 },
+  { month: "Jul", value: 130 },
+  { month: "Aug", value: 160 },
+  { month: "Sep", value: 120 },
+  { month: "Oct", value: 140 },
+  { month: "Nov", value: 180 },
+  { month: "Dec", value: 200 },
 ];
 
-export function SalesChart({ data = defaultData }: SalesChartProps) {
+const barData = [
+  { month: "Jan", value: 200 },
+  { month: "Feb", value: 350 },
+  { month: "Mar", value: 180 },
+  { month: "Apr", value: 450 },
+  { month: "May", value: 320 },
+  { month: "Jun", value: 380 },
+  { month: "Jul", value: 420 },
+  { month: "Aug", value: 480 },
+  { month: "Sep", value: 360 },
+  { month: "Oct", value: 400 },
+  { month: "Nov", value: 520 },
+  { month: "Dec", value: 480 },
+];
+
+export function SalesChart() {
   return (
-    <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--foreground)]">
-          Resale Data
-        </h3>
+    <div className="space-y-6">
+      {/* Total Product Sales - Line Chart */}
+      <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-medium text-[var(--foreground-secondary)] mb-1">
+              Total Product Sales
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              $2,129.00
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+              <span className="text-xs text-[var(--success)] bg-green-100 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+                70.5%
+              </span>
+            </div>
+          </div>
+          <select className="px-2 py-1 text-xs bg-[var(--background)] border border-[var(--border)] rounded text-[var(--foreground-secondary)]">
+            <option>This Week</option>
+          </select>
+        </div>
+
+        <div style={{ width: '100%', height: 180 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={lineData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis
+                dataKey="month"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--foreground-secondary)", fontSize: 10 }}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--foreground-secondary)", fontSize: 10 }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "8px",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#10B981"
+                strokeWidth={2}
+                dot={{ fill: "#10B981", strokeWidth: 2, r: 3 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="space-y-4 mb-6">
-        <div>
-          <p className="text-sm text-[var(--foreground-secondary)]">Views</p>
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-bold text-[var(--foreground)]">
-              +112,893
+      {/* Second Sales Chart - Bar Chart */}
+      <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-medium text-[var(--foreground-secondary)] mb-1">
+              Total Revenue
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              $2,129.00
             </p>
-            <span className="flex items-center text-xs text-[var(--success)]">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              12%
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-[var(--foreground-secondary)]">trend title</span>
+              <span className="text-xs text-[var(--success)] bg-green-100 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+                70.5%
+              </span>
+            </div>
           </div>
+          <select className="px-2 py-1 text-xs bg-[var(--background)] border border-[var(--border)] rounded text-[var(--foreground-secondary)]">
+            <option>This Week</option>
+          </select>
         </div>
-        <div>
-          <p className="text-sm text-[var(--foreground-secondary)]">Sales</p>
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-bold text-[var(--foreground)]">
-              +12,893
-            </p>
-            <span className="flex items-center text-xs text-[var(--success)]">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              8%
-            </span>
-          </div>
-        </div>
-        <div>
-          <p className="text-sm text-[var(--foreground-secondary)]">Orders</p>
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-bold text-[var(--foreground)]">
-              +12,893
-            </p>
-            <span className="flex items-center text-xs text-[var(--success)]">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              15%
-            </span>
-          </div>
-        </div>
-        <div>
-          <p className="text-sm text-[var(--foreground-secondary)]">Earning</p>
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-bold text-[var(--foreground)]">
-              +12,893
-            </p>
-            <span className="flex items-center text-xs text-[var(--success)]">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              22%
-            </span>
-          </div>
-        </div>
-      </div>
 
-      <div className="h-48">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--foreground-secondary)", fontSize: 10 }}
-            />
-            <YAxis hide />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-                fontSize: "12px",
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="var(--primary)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 180 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis
+                dataKey="month"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--foreground-secondary)", fontSize: 10 }}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--foreground-secondary)", fontSize: 10 }}
+              />
+              <Tooltip />
+              <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
