@@ -1,38 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Plus, ImageIcon, ChevronDown } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 
 export default function AddProductPage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    vendor: "",
+    productName: "",
+    productCategory: "",
     description: "",
+    tagKeywords: "",
     price: "",
-    currency: "USD",
+    discount: "",
+    discountCategory: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login");
-    } else if (!isLoading && user?.role !== "manager") {
-      router.push("/products");
-    }
-  }, [isLoading, isAuthenticated, user, router]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [thumbnailImage, setThumbnailImage] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -42,217 +33,263 @@ export default function AddProductPage() {
     );
   }
 
-  if (!isAuthenticated || user?.role !== "manager") {
+  if (!isAuthenticated) {
+    router.push("/login");
     return null;
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleImageDrop = (type: "preview" | "thumbnail") => (e: React.DragEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (type === "preview") {
+          setPreviewImage(reader.result as string);
+        } else {
+          setThumbnailImage(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const handleSave = () => {
+    console.log("Save product:", formData);
+    router.push("/products");
+  };
 
-    // In a real app, this would save to the database
-    alert("Product saved successfully!");
+  const handleDiscard = () => {
     router.push("/products");
   };
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <Sidebar />
+      <Header />
 
-      <div className="ml-64">
-        <Header />
-
-        <main className="p-6">
-          {/* Back Button */}
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 text-sm text-[var(--foreground-secondary)] hover:text-[var(--foreground)] mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Products
-          </Link>
-
+      <main className="ml-64 pt-16 p-6">
+        <div className="max-w-6xl mx-auto">
           {/* Page Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-[var(--foreground)]">
-                Add Product
-              </h1>
-              <p className="text-sm text-[var(--foreground-secondary)]">
-                Create a new product listing
-              </p>
-            </div>
+          <div className="flex items-center justify-between mb-8 mt-6">
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">
+              Add New Product
+            </h1>
             <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={() => router.push("/products")}>
-                Cancel
-              </Button>
-              <Button onClick={handleSubmit} isLoading={isSubmitting}>
-                Save Product
-              </Button>
+              <button
+                onClick={handleDiscard}
+                className="px-4 py-2 border border-[#EC4899] text-[#EC4899] rounded-lg text-sm font-medium hover:bg-[#EC4899]/10 transition-colors"
+              >
+                Discard Change
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-6 py-2 bg-[#8B5CF6] text-white rounded-lg text-sm font-medium hover:bg-[#7C3AED] transition-colors"
+              >
+                Save
+              </button>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column - Form Fields */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Add New Product Card */}
-                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
-                  <h2 className="text-lg font-semibold text-[var(--foreground)] mb-6">
-                    Add New Product
-                  </h2>
+          {/* Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Form */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* General Information */}
+              <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-6">
+                  Generar Information
+                </h2>
 
-                  {/* General Information */}
-                  <div className="mb-8">
-                    <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">
-                      General Information
-                    </h3>
-                    <div className="space-y-4">
-                      <Input
-                        label="Product Name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Enter product name"
-                        required
-                      />
+                {/* Product Name */}
+                <div className="mb-5">
+                  <label className="block text-sm text-[var(--foreground)] mb-2">
+                    Product Name
+                  </label>
+                  <input
+                    type="text"
+                    name="productName"
+                    value={formData.productName}
+                    onChange={handleInputChange}
+                    placeholder="Product Name"
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+                  />
+                </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                            Product Category
-                          </label>
-                          <select
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2.5 rounded-lg border border-[var(--input-border)] bg-[var(--input)] text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors"
-                          >
-                            <option value="">Select category</option>
-                            <option value="Precious Metals">Precious Metals</option>
-                            <option value="Energy">Energy</option>
-                            <option value="Industrial Metals">Industrial Metals</option>
-                            <option value="Agriculture">Agriculture</option>
-                          </select>
-                        </div>
-
-                        <Input
-                          label="Vendor"
-                          name="vendor"
-                          value={formData.vendor}
-                          onChange={handleChange}
-                          placeholder="Enter vendor name"
-                        />
-                      </div>
-                    </div>
+                {/* Product Category */}
+                <div className="mb-5">
+                  <label className="block text-sm text-[var(--foreground)] mb-2">
+                    Product Category
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="productCategory"
+                      value={formData.productCategory}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground-secondary)] appearance-none focus:outline-none focus:border-[var(--primary)] transition-colors"
+                    >
+                      <option value="">Product Category</option>
+                      <option value="electronics">Electronics</option>
+                      <option value="clothing">Clothing</option>
+                      <option value="accessories">Accessories</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--foreground-secondary)] pointer-events-none" />
                   </div>
+                </div>
 
-                  {/* Description */}
-                  <div className="mb-8">
-                    <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      placeholder="Enter product description..."
-                      rows={4}
-                      className="w-full px-4 py-2.5 rounded-lg border border-[var(--input-border)] bg-[var(--input)] text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors resize-none"
-                    />
-                  </div>
+                {/* Descriptions */}
+                <div className="mb-5">
+                  <label className="block text-sm text-[var(--foreground)] mb-2">
+                    Descriptions
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Description"
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors resize-none"
+                  />
+                </div>
 
-                  {/* Pricing */}
-                  <div>
-                    <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">
-                      Pricing
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input
-                        label="Amount"
-                        name="price"
-                        type="number"
-                        value={formData.price}
-                        onChange={handleChange}
-                        placeholder="0.00"
-                      />
-                      <div>
-                        <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                          Currency
-                        </label>
-                        <select
-                          name="currency"
-                          value={formData.currency}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 rounded-lg border border-[var(--input-border)] bg-[var(--input)] text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors"
-                        >
-                          <option value="USD">$ USA Dollars</option>
-                          <option value="EUR">€ Euro</option>
-                          <option value="GBP">£ British Pound</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                {/* Tag Keywords */}
+                <div>
+                  <label className="block text-sm text-[var(--foreground)] mb-2">
+                    Tag Keywoder
+                  </label>
+                  <textarea
+                    name="tagKeywords"
+                    value={formData.tagKeywords}
+                    onChange={handleInputChange}
+                    placeholder="Tag Keywoder"
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors resize-none"
+                  />
                 </div>
               </div>
 
-              {/* Right Column - Image Upload */}
-              <div className="space-y-6">
-                {/* Preview Product */}
-                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
-                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">
-                    Preview Product
-                  </h3>
-                  <p className="text-xs text-[var(--foreground-secondary)] mb-4">
-                    Require from Figma File
-                  </p>
-                  <div className="border-2 border-dashed border-[var(--border)] rounded-lg p-8 text-center hover:border-[var(--primary)] transition-colors cursor-pointer">
-                    <Upload className="w-8 h-8 mx-auto text-[var(--foreground-secondary)] mb-3" />
-                    <p className="text-sm text-[var(--foreground-secondary)]">
-                      Drop your image here, or{" "}
-                      <span className="text-[var(--primary)]">browse</span>
-                    </p>
-                    <p className="text-xs text-[var(--foreground-secondary)] mt-1">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </div>
+              {/* Pricing */}
+              <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-6">
+                  Pricing
+                </h2>
+
+                {/* Price */}
+                <div className="mb-5">
+                  <label className="block text-sm text-[var(--foreground)] mb-2">
+                    Proce
+                  </label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="Pricing"
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+                  />
                 </div>
 
-                {/* Thumbnail Product */}
-                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
-                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">
-                    Thumbnail Product
-                  </h3>
-                  <div className="border-2 border-dashed border-[var(--border)] rounded-lg p-8 text-center hover:border-[var(--primary)] transition-colors cursor-pointer">
-                    <Upload className="w-8 h-8 mx-auto text-[var(--foreground-secondary)] mb-3" />
-                    <p className="text-sm text-[var(--foreground-secondary)]">
-                      Drop your image here, or{" "}
-                      <span className="text-[var(--primary)]">browse</span>
-                    </p>
-                    <p className="text-xs text-[var(--foreground-secondary)] mt-1">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
+                {/* Discount and Discount Category */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-[var(--foreground)] mb-2">
+                      Discount
+                    </label>
+                    <input
+                      type="text"
+                      name="discount"
+                      value={formData.discount}
+                      onChange={handleInputChange}
+                      placeholder="Discount"
+                      className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder-[var(--foreground-secondary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[var(--foreground)] mb-2">
+                      Discount Category
+                    </label>
+                    <div className="relative">
+                      <select
+                        name="discountCategory"
+                        value={formData.discountCategory}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--foreground-secondary)] appearance-none focus:outline-none focus:border-[var(--primary)] transition-colors"
+                      >
+                        <option value="">Discount Category</option>
+                        <option value="percentage">Percentage</option>
+                        <option value="fixed">Fixed Amount</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--foreground-secondary)] pointer-events-none" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </form>
-        </main>
+
+            {/* Right Column - Image Uploads */}
+            <div className="lg:col-span-1 space-y-8">
+              {/* Previews Product */}
+              <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+                <h2 className="text-base font-semibold text-[var(--foreground)] mb-1">
+                  Previews Product
+                </h2>
+                <p className="text-sm text-[var(--foreground-secondary)] mb-4">
+                  Drag And Your Image Here
+                </p>
+                <div
+                  onDrop={handleImageDrop("preview")}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 flex flex-col items-center justify-center min-h-[180px] cursor-pointer hover:border-[var(--primary)] transition-colors"
+                >
+                  {previewImage ? (
+                    <img src={previewImage} alt="Preview" className="max-h-32 rounded-lg" />
+                  ) : (
+                    <>
+                      <ImageIcon className="w-10 h-10 text-[var(--foreground-secondary)] mb-3" />
+                      <p className="text-sm text-[var(--foreground-secondary)]">
+                        Drag and drop here
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Thumbnail Product */}
+              <div className="bg-[var(--card)] rounded-xl p-6 border border-[var(--border)]">
+                <h2 className="text-base font-semibold text-[var(--foreground)] mb-1">
+                  Thumnail Product
+                </h2>
+                <p className="text-sm text-[var(--foreground-secondary)] mb-4">
+                  Drag And Your Image Here
+                </p>
+                <div
+                  onDrop={handleImageDrop("thumbnail")}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 flex flex-col items-center justify-center min-h-[180px] cursor-pointer hover:border-[var(--primary)] transition-colors"
+                >
+                  {thumbnailImage ? (
+                    <img src={thumbnailImage} alt="Thumbnail" className="max-h-32 rounded-lg" />
+                  ) : (
+                    <>
+                      <ImageIcon className="w-10 h-10 text-[var(--foreground-secondary)] mb-3" />
+                      <p className="text-sm text-[var(--foreground-secondary)]">
+                        Drag and drop here
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <Footer />
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,19 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal, ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Product {
   id: string;
   name: string;
-  email?: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: "active" | "inactive" | "low_stock";
   image?: string;
-  published?: boolean;
+  views: number;
+  pricing: number;
+  revenue: number;
 }
 
 interface ProductTableProps {
@@ -23,51 +20,99 @@ interface ProductTableProps {
 }
 
 const tabs = [
-  { id: "all", label: "All Product" },
   { id: "published", label: "Published" },
-  { id: "lowstock", label: "Low Stock" },
+  { id: "draft", label: "Darft" },
 ];
 
-export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
-  const [activeTab, setActiveTab] = useState("all");
-  const [publishedStates, setPublishedStates] = useState<Record<string, boolean>>(
-    products.reduce((acc, product) => ({ ...acc, [product.id]: product.published ?? true }), {})
-  );
+// Product image URLs for variety
+const productImages = [
+  "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=100&h=100&fit=crop",
+  "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=100&h=100&fit=crop",
+];
 
-  const togglePublish = (productId: string) => {
-    setPublishedStates((prev) => ({
-      ...prev,
-      [productId]: !prev[productId],
-    }));
+// Mock products data
+const mockProducts: Product[] = Array(14).fill(null).map((_, i) => ({
+  id: `product-${i + 1}`,
+  name: "Product Name Place Here",
+  image: productImages[i % productImages.length],
+  views: 14000,
+  pricing: 1000,
+  revenue: 164000,
+}));
+
+export function ProductTable({ onEdit, onDelete }: ProductTableProps) {
+  const [activeTab, setActiveTab] = useState("published");
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set(["product-1"]));
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const toggleProduct = (productId: string) => {
+    const newSelected = new Set(selectedProducts);
+    if (newSelected.has(productId)) {
+      newSelected.delete(productId);
+    } else {
+      newSelected.add(productId);
+    }
+    setSelectedProducts(newSelected);
   };
 
-  const filteredProducts = products.filter((product) => {
-    if (activeTab === "published") return publishedStates[product.id];
-    if (activeTab === "lowstock") return product.stock < 10;
-    return true;
-  });
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const SortIcon = ({ field }: { field: string }) => (
+    <span className="inline-flex flex-col ml-1">
+      <ChevronUp className={cn("w-3 h-3 -mb-1", sortField === field && sortOrder === "asc" ? "text-[var(--foreground)]" : "text-[var(--foreground-secondary)]")} />
+      <ChevronDown className={cn("w-3 h-3 -mt-1", sortField === field && sortOrder === "desc" ? "text-[var(--foreground)]" : "text-[var(--foreground-secondary)]")} />
+    </span>
+  );
 
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)]">
-      {/* Tabs */}
-      <div className="flex items-center border-b border-[var(--border)]">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "px-6 py-4 text-sm font-medium transition-colors relative",
-              activeTab === tab.id
-                ? "text-[var(--primary)]"
-                : "text-[var(--foreground-secondary)] hover:text-[var(--foreground)]"
-            )}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)]" />
-            )}
+      {/* Header with Tabs and Actions */}
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
+        {/* Tabs */}
+        <div className="flex items-center gap-6">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "text-sm font-medium pb-2 transition-colors relative",
+                activeTab === tab.id
+                  ? "text-[var(--foreground)]"
+                  : "text-[var(--foreground-secondary)] hover:text-[var(--foreground)]"
+              )}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--foreground)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <button className="flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)] transition-colors">
+            Filter <ChevronDown className="w-4 h-4" />
           </button>
-        ))}
+          <button className="flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)] transition-colors">
+            Download <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -75,123 +120,126 @@ export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) 
         <table className="w-full">
           <thead>
             <tr className="border-b border-[var(--border)]">
-              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
-                Products
+              <th className="w-12 px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-[var(--foreground)]">
+                Product Name
               </th>
-              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
-                Stocks
+              <th className="text-left px-4 py-3 text-sm font-medium text-[var(--foreground)] cursor-pointer" onClick={() => handleSort("views")}>
+                <span className="flex items-center">
+                  Views <SortIcon field="views" />
+                </span>
               </th>
-              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
-                Price
+              <th className="text-left px-4 py-3 text-sm font-medium text-[var(--foreground)] cursor-pointer" onClick={() => handleSort("pricing")}>
+                <span className="flex items-center">
+                  Pricing <SortIcon field="pricing" />
+                </span>
               </th>
-              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
-                Publish
+              <th className="text-left px-4 py-3 text-sm font-medium text-[var(--foreground)] cursor-pointer" onClick={() => handleSort("revenue")}>
+                <span className="flex items-center">
+                  Revenue <SortIcon field="revenue" />
+                </span>
               </th>
-              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
-                Action
+              <th className="text-left px-4 py-3 text-sm font-medium text-[var(--foreground)] cursor-pointer" onClick={() => handleSort("manage")}>
+                <span className="flex items-center">
+                  Manage <SortIcon field="manage" />
+                </span>
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) => (
+            {mockProducts.map((product) => (
               <tr
                 key={product.id}
                 className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--card-hover)] transition-colors"
               >
-                {/* Product Cell */}
-                <td className="px-6 py-4">
+                {/* Checkbox */}
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.has(product.id)}
+                    onChange={() => toggleProduct(product.id)}
+                    className="w-4 h-4 rounded border-[var(--border)] accent-[#6366F1]"
+                  />
+                </td>
+
+                {/* Product Name */}
+                <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[var(--background-secondary)] flex items-center justify-center overflow-hidden">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-lg">📦</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-[var(--foreground)]">
-                        {product.name}
-                      </p>
-                      <p className="text-xs text-[var(--foreground-secondary)]">
-                        {product.email || `${product.name.toLowerCase().replace(/\s/g, '')}@email.com`}
-                      </p>
-                    </div>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-10 h-10 rounded object-cover"
+                    />
+                    <span className="text-sm text-[var(--foreground)]">{product.name}</span>
                   </div>
                 </td>
 
-                {/* Stocks Cell */}
-                <td className="px-6 py-4">
-                  <span
-                    className={cn(
-                      "text-sm font-medium",
-                      product.stock < 10
-                        ? "text-[var(--error)]"
-                        : "text-[var(--foreground)]"
-                    )}
-                  >
-                    {product.stock}
+                {/* Views */}
+                <td className="px-4 py-3">
+                  <span className="text-sm text-[var(--foreground-secondary)]">
+                    {product.views.toLocaleString()}
                   </span>
                 </td>
 
-                {/* Price Cell */}
-                <td className="px-6 py-4">
-                  <span className="text-sm text-[var(--foreground)]">
-                    ${product.price.toFixed(2)}
+                {/* Pricing */}
+                <td className="px-4 py-3">
+                  <span className="text-sm text-[var(--foreground-secondary)]">
+                    ${product.pricing.toLocaleString()}
                   </span>
                 </td>
 
-                {/* Publish Toggle */}
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => togglePublish(product.id)}
-                    className={cn(
-                      "w-10 h-5 rounded-full transition-colors relative",
-                      publishedStates[product.id]
-                        ? "bg-[#10B981]"
-                        : "bg-[var(--border)]"
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform",
-                        publishedStates[product.id] ? "right-0.5" : "left-0.5"
-                      )}
-                    />
-                  </button>
+                {/* Revenue */}
+                <td className="px-4 py-3">
+                  <span className="text-sm text-[var(--foreground-secondary)]">
+                    ${product.revenue.toLocaleString()}
+                  </span>
                 </td>
 
-                {/* Action Cell */}
-                <td className="px-6 py-4">
-                  <div className="relative group">
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm text-[var(--foreground-secondary)] bg-[var(--background)] border border-[var(--border)] rounded-lg hover:bg-[var(--card-hover)]">
-                      <MoreHorizontal className="w-4 h-4" />
-                      <ChevronDown className="w-3 h-3" />
+                {/* Manage */}
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => onEdit?.(product)}
+                      className="text-sm text-[var(--foreground-secondary)] hover:text-[var(--foreground)] transition-colors"
+                    >
+                      Edit
                     </button>
-                    {/* Dropdown */}
-                    <div className="absolute right-0 top-full mt-1 w-32 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
-                      <button
-                        onClick={() => onEdit?.(product)}
-                        className="w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--card-hover)]"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => onDelete?.(product.id)}
-                        className="w-full px-4 py-2 text-left text-sm text-[var(--error)] hover:bg-[var(--card-hover)]"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => onDelete?.(product.id)}
+                      className="text-sm text-[var(--foreground-secondary)] hover:text-[var(--error)] transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-center gap-2 p-4 border-t border-[var(--border)]">
+        <button className="p-1 text-[var(--foreground-secondary)] hover:text-[var(--foreground)]">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        {[1, 2, 3, 4, 5].map((page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={cn(
+              "w-8 h-8 text-sm rounded transition-colors",
+              currentPage === page
+                ? "bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]"
+                : "text-[var(--foreground-secondary)] hover:text-[var(--foreground)]"
+            )}
+          >
+            {page}
+          </button>
+        ))}
+        <button className="p-1 text-[var(--foreground-secondary)] hover:text-[var(--foreground)]">
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

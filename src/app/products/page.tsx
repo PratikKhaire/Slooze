@@ -9,8 +9,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductTable } from "@/components/products/ProductTable";
-import { SalesChart } from "@/components/products/SalesChart";
-import { mockProducts } from "@/data/mockData";
+import { TotalViewsCard } from "@/components/products/TotalViewsCard";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -36,12 +35,11 @@ export default function ProductsPage() {
 
   const isManager = user?.role === "manager";
 
-  const handleEdit = (product: typeof mockProducts[0]) => {
+  const handleEdit = (product: any) => {
     router.push(`/products/add?edit=${product.id}`);
   };
 
   const handleDelete = (productId: string) => {
-    // In a real app, this would call an API
     alert(`Delete product ${productId}`);
   };
 
@@ -53,35 +51,35 @@ export default function ProductsPage() {
       <main className="ml-64 pt-16 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Page Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 mt-6">
             <h1 className="text-2xl font-bold text-[var(--foreground)]">
               Product
             </h1>
             {isManager && (
               <Link
                 href="/products/add"
-                className="flex items-center gap-2 px-4 py-2 bg-[#10B981] text-white rounded-lg text-sm font-medium hover:bg-[#059669] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg text-sm font-medium hover:from-[#7C3AED] hover:to-[#6D28D9] transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" />
-                Add Product
+                Add New Product
               </Link>
             )}
           </div>
 
           {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Product Table */}
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Product Table - Takes 3/4 of the space */}
+            <div className="lg:col-span-3">
               <ProductTable
-                products={mockProducts}
+                products={[]}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
             </div>
 
-            {/* Sales Chart Sidebar */}
-            <div>
-              <SalesChart />
+            {/* Total Views Sidebar */}
+            <div className="lg:col-span-1">
+              <TotalViewsCard />
             </div>
           </div>
         </div>
