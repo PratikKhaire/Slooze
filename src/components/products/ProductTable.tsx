@@ -1,10 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Edit, Trash2, MoreVertical, Package } from "lucide-react";
-import { Product } from "@/data/mockData";
-import { useAuth } from "@/context/AuthContext";
+import { MoreHorizontal, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface Product {
+  id: string;
+  name: string;
+  email?: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: "active" | "inactive" | "low_stock";
+  image?: string;
+  published?: boolean;
+}
 
 interface ProductTableProps {
   products: Product[];
@@ -12,51 +22,52 @@ interface ProductTableProps {
   onDelete?: (productId: string) => void;
 }
 
-export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
-  const { user } = useAuth();
-  const isManager = user?.role === "manager";
-  const [selectedTab, setSelectedTab] = useState<"published" | "draft">("published");
+const tabs = [
+  { id: "all", label: "All Product" },
+  { id: "published", label: "Published" },
+  { id: "lowstock", label: "Low Stock" },
+];
 
-  const filteredProducts = products.filter((p) => p.status === selectedTab);
+export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
+  const [activeTab, setActiveTab] = useState("all");
+  const [publishedStates, setPublishedStates] = useState<Record<string, boolean>>(
+    products.reduce((acc, product) => ({ ...acc, [product.id]: product.published ?? true }), {})
+  );
+
+  const togglePublish = (productId: string) => {
+    setPublishedStates((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+  };
+
+  const filteredProducts = products.filter((product) => {
+    if (activeTab === "published") return publishedStates[product.id];
+    if (activeTab === "lowstock") return product.stock < 10;
+    return true;
+  });
 
   return (
-    <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl">
-      {/* Header */}
-      <div className="p-6 border-b border-[var(--border)]">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">
-            Product
-          </h2>
-          <span className="text-sm text-[var(--foreground-secondary)]">
-            Total: +112,893
-          </span>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex items-center gap-4">
+    <div className="bg-[var(--card)] rounded-xl border border-[var(--border)]">
+      {/* Tabs */}
+      <div className="flex items-center border-b border-[var(--border)]">
+        {tabs.map((tab) => (
           <button
-            onClick={() => setSelectedTab("published")}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-              selectedTab === "published"
-                ? "bg-[var(--primary)] text-white"
-                : "text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)]"
+              "px-6 py-4 text-sm font-medium transition-colors relative",
+              activeTab === tab.id
+                ? "text-[var(--primary)]"
+                : "text-[var(--foreground-secondary)] hover:text-[var(--foreground)]"
             )}
           >
-            Published
-          </button>
-          <button
-            onClick={() => setSelectedTab("draft")}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-              selectedTab === "draft"
-                ? "bg-[var(--primary)] text-white"
-                : "text-[var(--foreground-secondary)] hover:bg-[var(--card-hover)]"
+            {tab.label}
+            {activeTab === tab.id && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--primary)]" />
             )}
-          >
-            Draft
           </button>
-        </div>
+        ))}
       </div>
 
       {/* Table */}
@@ -64,106 +75,124 @@ export function ProductTable({ products, onEdit, onDelete }: ProductTableProps) 
         <table className="w-full">
           <thead>
             <tr className="border-b border-[var(--border)]">
-              <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
-                <input type="checkbox" className="rounded border-[var(--border)]" />
+              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
+                Products
               </th>
-              <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
-                Product Name
+              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
+                Stocks
               </th>
-              <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
-                Qty
-              </th>
-              <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
+              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
                 Price
               </th>
-              <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
-                Status
+              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
+                Publish
               </th>
-              {isManager && (
-                <th className="text-left py-4 px-6 text-sm font-medium text-[var(--foreground-secondary)]">
-                  Actions
-                </th>
-              )}
+              <th className="text-left px-6 py-4 text-sm font-medium text-[var(--foreground-secondary)]">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
               <tr
                 key={product.id}
-                className="border-b border-[var(--border)] table-row-hover"
+                className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--card-hover)] transition-colors"
               >
-                <td className="py-4 px-6">
-                  <input type="checkbox" className="rounded border-[var(--border)]" />
-                </td>
-                <td className="py-4 px-6">
+                {/* Product Cell */}
+                <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[var(--background-secondary)] flex items-center justify-center">
-                      <Package className="w-5 h-5 text-[var(--foreground-secondary)]" />
+                    <div className="w-10 h-10 rounded-lg bg-[var(--background-secondary)] flex items-center justify-center overflow-hidden">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-lg">📦</span>
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-medium text-[var(--foreground)]">
                         {product.name}
                       </p>
                       <p className="text-xs text-[var(--foreground-secondary)]">
-                        {product.category}
+                        {product.email || `${product.name.toLowerCase().replace(/\s/g, '')}@email.com`}
                       </p>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-6 text-sm text-[var(--foreground)]">
-                  {product.quantity.toLocaleString()}
-                </td>
-                <td className="py-4 px-6 text-sm text-[var(--foreground)]">
-                  ${product.price.toFixed(2)}
-                </td>
-                <td className="py-4 px-6">
+
+                {/* Stocks Cell */}
+                <td className="px-6 py-4">
                   <span
                     className={cn(
-                      "px-2.5 py-1 rounded-full text-xs font-medium",
-                      product.status === "published"
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      "text-sm font-medium",
+                      product.stock < 10
+                        ? "text-[var(--error)]"
+                        : "text-[var(--foreground)]"
                     )}
                   >
-                    {product.status === "published" ? "Published" : "Draft"}
+                    {product.stock}
                   </span>
                 </td>
-                {isManager && (
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
+
+                {/* Price Cell */}
+                <td className="px-6 py-4">
+                  <span className="text-sm text-[var(--foreground)]">
+                    ${product.price.toFixed(2)}
+                  </span>
+                </td>
+
+                {/* Publish Toggle */}
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => togglePublish(product.id)}
+                    className={cn(
+                      "w-10 h-5 rounded-full transition-colors relative",
+                      publishedStates[product.id]
+                        ? "bg-[#10B981]"
+                        : "bg-[var(--border)]"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform",
+                        publishedStates[product.id] ? "right-0.5" : "left-0.5"
+                      )}
+                    />
+                  </button>
+                </td>
+
+                {/* Action Cell */}
+                <td className="px-6 py-4">
+                  <div className="relative group">
+                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm text-[var(--foreground-secondary)] bg-[var(--background)] border border-[var(--border)] rounded-lg hover:bg-[var(--card-hover)]">
+                      <MoreHorizontal className="w-4 h-4" />
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+                    {/* Dropdown */}
+                    <div className="absolute right-0 top-full mt-1 w-32 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                       <button
                         onClick={() => onEdit?.(product)}
-                        className="p-2 rounded-lg hover:bg-[var(--card-hover)] text-[var(--foreground-secondary)] hover:text-[var(--primary)] transition-colors"
+                        className="w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--card-hover)]"
                       >
-                        <Edit className="w-4 h-4" />
+                        Edit
                       </button>
                       <button
                         onClick={() => onDelete?.(product.id)}
-                        className="p-2 rounded-lg hover:bg-[var(--card-hover)] text-[var(--foreground-secondary)] hover:text-[var(--error)] transition-colors"
+                        className="w-full px-4 py-2 text-left text-sm text-[var(--error)] hover:bg-[var(--card-hover)]"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 rounded-lg hover:bg-[var(--card-hover)] text-[var(--foreground-secondary)] transition-colors">
-                        <MoreVertical className="w-4 h-4" />
+                        Delete
                       </button>
                     </div>
-                  </td>
-                )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Empty State */}
-      {filteredProducts.length === 0 && (
-        <div className="p-12 text-center">
-          <Package className="w-12 h-12 mx-auto text-[var(--foreground-secondary)] mb-4" />
-          <p className="text-[var(--foreground-secondary)]">
-            No {selectedTab} products found
-          </p>
-        </div>
-      )}
     </div>
   );
 }
