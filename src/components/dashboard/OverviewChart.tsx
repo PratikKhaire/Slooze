@@ -31,9 +31,9 @@ export function OverviewChart() {
         Overview
       </h3>
 
-      <div style={{ width: '100%', height: 256 }}>
+      <div style={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} barGap={0}>
+          <BarChart data={data} barGap={2}>
             <XAxis
               dataKey="month"
               axisLine={false}
@@ -58,13 +58,13 @@ export function OverviewChart() {
               dataKey="thisYear"
               fill="#3B82F6"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={16}
             />
             <Bar
               dataKey="lastYear"
               fill="#E5E7EB"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={16}
             />
           </BarChart>
         </ResponsiveContainer>

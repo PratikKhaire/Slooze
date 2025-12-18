@@ -23,8 +23,8 @@ export function RecentSales() {
         {sales.map((sale, index) => (
           <div key={index} className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[var(--background-secondary)] flex items-center justify-center">
-                <span className="text-[var(--foreground-secondary)]">👤</span>
+              <div className="w-10 h-10 rounded-full bg-[var(--background-secondary)] flex items-center justify-center overflow-hidden">
+                <span className="text-[var(--foreground-secondary)] text-lg">👤</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--foreground)]">
